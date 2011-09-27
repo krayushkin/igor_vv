@@ -5,6 +5,7 @@
 #include <malloc.h>
 #include <windows.h>
 #include "fixp.h"
+#include "table.h"
 
 typedef	float (*PFLOAT_FUNC)(float);
 
@@ -25,7 +26,7 @@ static const float coff[] = {
 static const float fact_2n[] = {
     1,2,24,720,40320,3628800.0,
     479001600,87178289152.0,
-    20922788478976,6402373530419200.0,
+    20922788478976.0,6402373530419200.0,
     2432902023163674600.0,
     1124000724806013000000.0
 };
@@ -230,6 +231,9 @@ int main(int argc, char const *argv[])
 	float fl= 1.0/4194304; // 1/2^22
 	const char* flverify_status[] = {"OK", "ERROR"};
 	srand(0);
+
+	test_table();
+
 	printf("Starting precision tests:\nPrecision: %.18f\n", fl);
 	printf("Func: FlMath           flverify test:  %s\n",  flverify_status[flverify(fl, FlMath)] );
 	printf("Func: FlCyclNoGorner   flverify test:  %s\n",  flverify_status[flverify(fl, FlCyclNoGorner)]);
@@ -239,9 +243,11 @@ int main(int argc, char const *argv[])
 
 	printf("Func: FixCyclGorner    fixverify test: %s\n",  flverify_status[fixverify(fl, FixCyclGorner)]);
 	printf("Func: FixNoCyclGorner  fixverify test: %s\n",  flverify_status[fixverify(fl, FixNoCyclGorner)]);
+	printf("Func: FixTableGorner   fixverify test: %s\n",  flverify_status[fixverify(fl, FixTableGorner)]);
+
 
 	banchmark(sample_n);
-
+	free_table();
 	return 0;
 
 }
