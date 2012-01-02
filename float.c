@@ -9,6 +9,8 @@
 
 typedef	float (*PFLOAT_FUNC)(float);
 
+//start FlFunc
+
 //таблица коэффициентов для метода Горнера
 static const float coff[] = {
  1, -0.5, 0.041666667908430099,
@@ -111,6 +113,9 @@ float FlNoCyclNoGorner(float x)
 	    (fact2x[5]/fact_2n[5]));
 }
 
+//end FlFunc
+
+//start flverify
 // функция для проверки точности вычисления функции p. Возвращает 0 в случае успеха проверки и 1 в случае неудачи.
 int flverify(float  fl, PFLOAT_FUNC p)
 {
@@ -137,7 +142,7 @@ int flverify(float  fl, PFLOAT_FUNC p)
 	}
 	return 0;
 }
-
+//end flverify
 // генерируем случайные числа в диапазоне от 0 до 1
 float my_random()
 {
@@ -149,10 +154,11 @@ void banchmark(int sample_n)
 {
 	int i;
 	float *sample = (float*) malloc(sizeof(*sample) * sample_n);
-	fixp *sample_fixp = (fixp*) malloc(sizeof(*sample_fixp) * sample_n);
 	float *result = (float*) malloc(sizeof(*result) * sample_n);
+	fixp *sample_fixp = (fixp*) malloc(sizeof(*sample_fixp) * sample_n);
+	fixp *fix_res = (fixp*) malloc(sizeof(*fix_res) * sample_n);
 
-	fixp fix_res = 0;
+
 
 	// заполняем массив случайными данными
 	for (i = 0; i < sample_n; ++i) {
@@ -174,65 +180,85 @@ void banchmark(int sample_n)
 	for (i = 0; i < sample_n; ++i)
 		result[i] = FlNoCyclNoGorner(sample[i]);
 	QueryPerformanceCounter(&t2);
-	printf("Func: FlNoCyclNoGorner %f ms\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
+	printf("Func: FlNoCyclNoGorner %f ns\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
 
 	QueryPerformanceCounter(&t1);
 	for (i = 0; i < sample_n; ++i)
 		result[i] = FlCyclNoGorner(sample[i]);
 	QueryPerformanceCounter(&t2);
-	printf("Func: FlCyclNoGorner   %f ms\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
+	printf("Func: FlCyclNoGorner   %f ns\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
 
 	QueryPerformanceCounter(&t1);
 	for (i = 0; i < sample_n; ++i)
 		result[i] = FlNoCyclGorner(sample[i]);
 	QueryPerformanceCounter(&t2);
-	printf("Func: FlNoCyclGorner   %f ms\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
+	printf("Func: FlNoCyclGorner   %f ns\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
 
 	QueryPerformanceCounter(&t1);
 	for (i = 0; i < sample_n; ++i)
 		result[i] = FlCyclGorner(sample[i]);
 	QueryPerformanceCounter(&t2);
-	printf("Func: FlCyclGorner     %f ms\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
+	printf("Func: FlCyclGorner     %f ns\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
 
 	QueryPerformanceCounter(&t1);
 	for (i = 0; i < sample_n; ++i)
 		result[i] = FlMath(sample[i]);
 	QueryPerformanceCounter(&t2);
-	printf("Func: FlMath           %f ms\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
+	printf("Func: FlMath           %f ns\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
 
 
 	QueryPerformanceCounter(&t1);
 	for (i = 0; i < sample_n; ++i)
-		fix_res = FixNoCyclGorner(sample_fixp[i]);
+		fix_res[i] = FixNoCyclGorner(sample_fixp[i]);
 	QueryPerformanceCounter(&t2);
-	printf("Func: FixNoCyclGorner  %f ms\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
+	printf("Func: FixNoCyclGorner  %f ns\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
 
 	QueryPerformanceCounter(&t1);
 	for (i = 0; i < sample_n; ++i)
-		fix_res = FixCyclGorner(sample_fixp[i]);
+		fix_res[i] = FixCyclGorner(sample_fixp[i]);
 	QueryPerformanceCounter(&t2);
-	printf("Func: FixCyclGorner    %f ms\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
+	printf("Func: FixCyclGorner    %f ns\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
 
+	QueryPerformanceCounter(&t1);
+	for (i = 0; i < sample_n; ++i)
+		fix_res[i] = FixTableGorner(sample_fixp[i]);
+	QueryPerformanceCounter(&t2);
+	printf("Func: FixTableGorner   %f ns\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
 
 	free(sample);
 	free(result);
 	free(sample_fixp);
+	free(fix_res);
 }
 
+
+unsigned char test_table(float fl)
+{
+	char k;
+	for (k = 1; k < 20; ++k) {
+		gen_table(k);
+		if (!fixverify(fl, FixTableGorner))
+		{
+			free_table();
+			return k;
+		}
+		else
+		{
+			free_table();
+		}
+	}
+	return 0;
+}
 
 int main(int argc, char const *argv[])
 {
 	int sample_n = 1000000;
-	if (argc == 2)
-		sscanf(argv[1], "%d", &sample_n);
-	else
-		printf("Use NUMBER command line argument to specify number of operations\n");
-	/* code */
+
 	float fl= 1.0/4194304; // 1/2^22
 	const char* flverify_status[] = {"OK", "ERROR"};
 	srand(0);
 
-	test_table();
+
 
 	printf("Starting precision tests:\nPrecision: %.18f\n", fl);
 	printf("Func: FlMath           flverify test:  %s\n",  flverify_status[flverify(fl, FlMath)] );
@@ -241,13 +267,18 @@ int main(int argc, char const *argv[])
 	printf("Func: FlNoCyclGorner   flverify test:  %s\n",  flverify_status[flverify(fl, FlNoCyclGorner)]);
 	printf("Func: FlCyclGorner     flverify test:  %s\n",  flverify_status[flverify(fl, FlCyclGorner)]);
 
+        test_fixp();
+
 	printf("Func: FixCyclGorner    fixverify test: %s\n",  flverify_status[fixverify(fl, FixCyclGorner)]);
 	printf("Func: FixNoCyclGorner  fixverify test: %s\n",  flverify_status[fixverify(fl, FixNoCyclGorner)]);
-	printf("Func: FixTableGorner   fixverify test: %s\n",  flverify_status[fixverify(fl, FixTableGorner)]);
 
 
+	char k = test_table(fl);
+	gen_table(k);
+	printf("Func: FixTableGorner   fixverify test: %s, k = %d\n",  flverify_status[fixverify(fl, FixTableGorner)], (int)k);
 	banchmark(sample_n);
 	free_table();
+
 	return 0;
 
 }

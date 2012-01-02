@@ -8,7 +8,7 @@
 
 #include "fixp.h"
 
-
+//start FixFunc
 //таблица коэффициентов для метода Горнера
 static const fixp coff[] = {
 				fixp_rconst(  1),
@@ -55,6 +55,7 @@ fixp FixNoCyclGorner(fixp x)
 }
 
 
+
 // Реализация по схеме Горнера с циклом
 fixp FixCyclGorner(fixp x)
 {
@@ -64,7 +65,7 @@ fixp FixCyclGorner(fixp x)
 	    int i;
 	    for(i = 11; i>=0; i--)
 	    {
-	        retx = fixp_add( fixp_mul(retx, x2), coff[i] )  ;
+	        retx = fixp_add( fixp_xmul(retx, x2), coff[i] )  ;
 	    }
 	    return retx;
 }
@@ -104,3 +105,36 @@ int fixverify(float  fl, PFIX_FUNC p)
 	}
 	return 0;
 }
+//end FixFunc
+
+//start test_fixp
+void test_fixp(void)
+{
+    float a = 0.125f;
+    float b = 1.500f;
+
+    fixp fixp_from_a = fixp_rconst(a);
+    fixp fixp_from_b = fixp_rconst(b);
+
+    printf("test_fixp: Start testing fixed point macros\n");
+
+    printf("test_fixp: test fixp_rconst(R):   ");
+    printf("%f = %f\n", a, fixp_tofloat(fixp_from_a) );
+    printf("test_fixp: test fixp_tofloat(A):  ");
+    printf("%f = %f\n", b, fixp_tofloat(fixp_from_b) );
+
+    printf("test_fixp: test fixp_add(A,B):    ");
+    printf("%f = %f\n", a+b, fixp_tofloat( fixp_add(  fixp_from_a, fixp_from_b  )   ) );
+    printf("test_fixp: test fixp_sub(A,B):    ");
+    printf("%f = %f\n", b-a, fixp_tofloat( fixp_sub(  fixp_from_b, fixp_from_a  )   ) );
+
+    printf("test_fixp: test fixp_xmul(A,B):   ");
+    printf("%f = %f\n", a*b, fixp_tofloat( fixp_xmul(  fixp_from_a, fixp_from_b  )   ) );
+    printf("test_fixp: test fixp_xdiv(A,B):   ");
+    printf("%f = %f\n", a/b, fixp_tofloat( fixp_xdiv(  fixp_from_a, fixp_from_b  )   ) );
+
+    printf("test_fixp: test fixp_fracpart(A): ");
+    printf("%f = %f\n", 0.500f, fixp_tofloat( fixp_fracpart( fixp_from_b )  ) );
+}
+//end test_fixp
+

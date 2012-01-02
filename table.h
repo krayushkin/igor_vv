@@ -11,7 +11,8 @@
 
 #define N_COEF 3
 
+void gen_table(unsigned char k);
 void free_table(void);
 fixp FixTableGorner(fixp x);
-void test_table(void);
+
 #endif /* TABLE_H_ */
