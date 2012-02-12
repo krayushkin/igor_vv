@@ -19,7 +19,7 @@
  
   a_n = \frac{ 2^{2n} (2^{2n} - 1) B_n }{(2n)!}
 
-  tan(x) = a_n x^{2n-1}
+  tan(x) = x + \frac{1}{3} x^3 + \frac{2}{15} x^5 + a_n x^{2n-1}
 
   tan(x) = ((...(a_{n}x^{2} + a_{n-1} ) x^{2} + ... + a_{1}) x^{2} + a_{0}) x
 
@@ -51,10 +51,10 @@
 Разработка на языке Си набора процедур реализации функции для случая использования данных типа float
 ----------------------------------------------------------------------------------------------------
 
-.. include:: float.c
-  :literal:
-  :start-after: //start FlFunc
-  :end-before: //end FlFunc
+.. .. include:: float.c
+   :literal:
+   :start-after: //start FlFunc
+   :end-before: //end FlFunc
 
 Проведение измерений затрат времени вычисления функции через различные процедуры
 --------------------------------------------------------------------------------
@@ -64,12 +64,17 @@
 ==================  ==================
 Функция             Результат
 ==================  ==================
-FlNoCyclNoGorner    64.585583 ns
-FlCyclNoGorner      61.034014 ns
-FlNoCyclGorner      29.378874 ns
-FlCyclGorner        32.213591 ns
-FlMath              65.244046 ns
+FlNoCyclNoGorner    64.585583 
+FlCyclNoGorner      61.034014 
+FlNoCyclGorner      29.378874 
+FlCyclGorner        32.213591 
+FlMath              65.244046 
 ==================  ==================
 
 
+FlNoCyclNoGorner    936.455672 ns
+FlCyclNoGorner      61.330401 ns
+FlNoCyclGorner      21.048597 ns
+FlCyclGorner        42.940310 ns
+FlMath              46.443426 ns
 
