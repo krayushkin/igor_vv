@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""See syntax on _tex
+.. _tex http://en.wikibooks.org/wiki/LaTeX/Mathematics
+"""
 
 import sys
 from urllib import urlencode, quote_plus

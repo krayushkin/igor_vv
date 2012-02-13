@@ -7,6 +7,8 @@
 
 typedef	float (*PFLOAT_FUNC)(float);
 
+//start FlFunc
+
 static const float a[] = 
 {
 	1.0,
@@ -75,9 +77,20 @@ float FlCyclGorner(float x)
 // Прямая реализация без цикла
 float FlNoCyclNoGorner(float x)
 {
-	return a[0]*powf(x, 1)+a[1]*powf(x, 3)+a[2]*powf(x, 5)+a[3]*powf(x, 7)+a[4]*powf(x, 9)+a[5]*powf(x, 11)+a[6]*powf(x, 13)+a[7]*powf(x, 15)+a[8]*powf(x, 17)+a[9]*powf(x, 19)+a[10]*powf(x, 21);
+	return a[0]*x+
+	       a[1]*x*x*x+
+	       a[2]*x*x*x*x*x+
+	       a[3]*x*x*x*x*x*x*x+
+	       a[4]*x*x*x*x*x*x*x*x*x+
+	       a[5]*x*x*x*x*x*x*x*x*x*x*x+
+	       a[6]*x*x*x*x*x*x*x*x*x*x*x*x*x+
+	       a[7]*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x+
+	       a[8]*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x+
+	       a[9]*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x+
+	       a[10]*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x*x;
 }
 
+//end FlFunc
 
 //start flverify
 // функция для проверки точности вычисления функции p. Возвращает 0 в случае успеха проверки и 1 в случае неудачи.

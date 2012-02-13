@@ -2,9 +2,9 @@ PYTHON = python.exe
 
 CC = gcc
 
-CFLAGS = -Wall -pedantic
+CFLAGS = -Wall -pedantic -O0
 
-all: build doc.html
+all: build doc.html doc.odt
 
 formulas.png: formulas.tex
 	$(PYTHON) texmath2img.py formulas.tex formulas.png
@@ -18,6 +18,9 @@ bench_table.rst: float
 
 bench_table.png: bench_table.rst
 	$(PYTHON) rst2img.py bench_table.rst bench_table.png
+
+doc.odt: doc.rst
+	$(PYTHON) c:\python27\Scripts\rst2odt.py doc.rst doc.odt
 
 doc.html: doc.rst
 	$(PYTHON) c:\python27\Scripts\rst2html.py --math-output=MathML doc.rst doc.html

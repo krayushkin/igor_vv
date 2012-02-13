@@ -3,4 +3,7 @@
 *.exe
 *.html
 *.odt
+prec_table.rst
+bench_table.rst
+*.png
 
