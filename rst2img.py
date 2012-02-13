@@ -2,7 +2,7 @@
 import docutils.core as doc
 import xml.sax as sax
 import sys
-from urllib import urlencode
+from urllib import urlencode, quote_plus
 import urllib2
 
 class BarChart(object):
@@ -40,11 +40,11 @@ class DocutilsXmlHandler(sax.ContentHandler):
 
 	def get_data(self):
 		"""docstring for get_data"""
-		data = BarChart(labels=self.data[0::2], digits=self.data[1::2], title="Привет всем")
+		data = BarChart(labels=self.data[0::2], digits=self.data[1::2])
 		return data
 
+
 def get_image(out, data):
-	#https://chart.googleapis.com/chart?chs=320x200&cht=bvs&chd=t:-5,30,-30,50,80,200&chds=a&chxt=y&chm={marker}
 	palette = ["85FF6D", "7791FF", "C5C8D9", "FF7499", "FBAC71",
 		   "E6FB78", "E58D9D", "D6CE3D", "004D67", "ECE1CD"]
 	labels = data.labels
@@ -69,10 +69,6 @@ def get_image(out, data):
 	url = url_base + urlencode(args)
 
 	open(out, "wb").write( urllib2.urlopen( url ).read() )
-
-
-
-
 
 
 

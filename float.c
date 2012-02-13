@@ -135,38 +135,40 @@ void banchmark(int sample_n)
 	QueryPerformanceFrequency(&frequency);
 	// start timer
 
-	printf("Starting %d samples banchmark\n", sample_n);
+	printf("Starting %d samples banchmark\n\n", sample_n);
 
+	printf("=======================  =================================\n");
 	QueryPerformanceCounter(&t1);
 	for (i = 0; i < sample_n; ++i)
 		result[i] = FlNoCyclNoGorner(sample[i]);
 	QueryPerformanceCounter(&t2);
-	printf("Func: FlNoCyclNoGorner %f ns\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
+	printf("Func: FlNoCyclNoGorner         %f\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
 
 	QueryPerformanceCounter(&t1);
 	for (i = 0; i < sample_n; ++i)
 		result[i] = FlCyclNoGorner(sample[i]);
 	QueryPerformanceCounter(&t2);
-	printf("Func: FlCyclNoGorner   %f ns\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
+	printf("Func: FlCyclNoGorner           %f\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
 
 	QueryPerformanceCounter(&t1);
 	for (i = 0; i < sample_n; ++i)
 		result[i] = FlNoCyclGorner(sample[i]);
 	QueryPerformanceCounter(&t2);
-	printf("Func: FlNoCyclGorner   %f ns\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
+	printf("Func: FlNoCyclGorner           %f\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
 
 	QueryPerformanceCounter(&t1);
 	for (i = 0; i < sample_n; ++i)
 		result[i] = FlCyclGorner(sample[i]);
 	QueryPerformanceCounter(&t2);
-	printf("Func: FlCyclGorner     %f ns\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
+	printf("Func: FlCyclGorner             %f\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
 
 	QueryPerformanceCounter(&t1);
 	for (i = 0; i < sample_n; ++i)
 		result[i] = FlMath(sample[i]);
 	QueryPerformanceCounter(&t2);
-	printf("Func: FlMath           %f ns\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
+	printf("Func: FlMath                   %f\n", (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
 
+	printf("=======================  =================================\n");
 	free(sample);
 	free(result);
 }
@@ -180,16 +182,27 @@ int main(int argc, char const *argv[])
 	float fl= 1.0/1048576; // 1/2^20
 	const char* flverify_status[] = {"OK", "ERROR"};
 	srand(0);
+if (argc == 2) {
+	/* code */
+	if (strcmp(argv[1], "bench") == 0) {
+		banchmark(sample_n);
+	}
+	else {
+		if (strcmp(argv[1], "prec") == 0) {
+			printf("Starting precision tests. Precision: %.18f\n\n", fl);
+
+			printf("=======================  =================================\n");
+			printf("Func: FlMath              flverify test:  %s\n",  flverify_status[flverify(fl, FlMath)] );
+			printf("Func: FlCyclNoGorner      flverify test:  %s\n",  flverify_status[flverify(fl, FlCyclNoGorner)]);
+			printf("Func: FlNoCyclNoGorner    flverify test:  %s\n",  flverify_status[flverify(fl, FlNoCyclNoGorner)]);
+			printf("Func: FlNoCyclGorner      flverify test:  %s\n",  flverify_status[flverify(fl, FlNoCyclGorner)]);
+			printf("Func: FlCyclGorner        flverify test:  %s\n",  flverify_status[flverify(fl, FlCyclGorner)]);
+			printf("=======================  =================================\n");
+		}
+	}
+}
 
 
-	printf("Starting precision tests:\nPrecision: %.18f\n", fl);
-	printf("Func: FlMath           flverify test:  %s\n",  flverify_status[flverify(fl, FlMath)] );
-	printf("Func: FlCyclNoGorner   flverify test:  %s\n",  flverify_status[flverify(fl, FlCyclNoGorner)]);
-	printf("Func: FlNoCyclNoGorner flverify test:  %s\n",  flverify_status[flverify(fl, FlNoCyclNoGorner)]);
-	printf("Func: FlNoCyclGorner   flverify test:  %s\n",  flverify_status[flverify(fl, FlNoCyclGorner)]);
-	printf("Func: FlCyclGorner     flverify test:  %s\n",  flverify_status[flverify(fl, FlCyclGorner)]);
-
-	banchmark(sample_n);
 	return 0;
 
 }
